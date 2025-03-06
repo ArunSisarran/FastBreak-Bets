@@ -1,0 +1,54 @@
+.stats-table-container {
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.stats-table th {
+  background-color: #f2f2f2;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.stats-table th.sortable {
+  cursor: pointer;
+}
+
+.stats-table th.sortable:hover {
+  background-color: #e5e5e5;
+}
+
+.stats-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.sort-indicator {
+  margin-left: 5px;
+}
+
+.no-data {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+/* Team name and player name alignment */
+.stats-table td:first-child,
+.stats-table th:first-child {
+  text-align: left;
+}
