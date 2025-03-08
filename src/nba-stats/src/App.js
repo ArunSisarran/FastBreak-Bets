@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
-import TeamStats from './components/TeamStats';
-import PlayerStats from './components/PlayerStats';
-import LeagueStats from './components/LeagueStats';
+import TeamStats from './Pages/TeamStats';
+import PlayerStats from './Pages/PlayerStats';
+import LeagueStats from './Pages/LeagueStats';
 
 function App() {
   const [activeTab, setActiveTab] = useState('team');
