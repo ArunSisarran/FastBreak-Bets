@@ -1,0 +1,172 @@
+.stats-table-container {
+  overflow-x: auto;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.stats-table-container:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+  overflow: hidden;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 14px 16px;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.stats-table th {
+  background-color: #f8f9fa;
+  color: #202124;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e8eaed;
+  z-index: 10;
+}
+
+.stats-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.stats-table th.sortable:hover {
+  background-color: #eef2fd;
+  color: #1a73e8;
+}
+
+.stats-table th.sorted-asc::after,
+.stats-table th.sorted-desc::after {
+  content: "";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  height: 0;
+  width: 0;
+  margin-top: -3px;
+  opacity: 0;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.3s forwards;
+}
+
+.stats-table th.sorted-asc::after {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #1a73e8;
+}
+
+.stats-table th.sorted-desc::after {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #1a73e8;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.stats-table tr {
+  transition: all 0.2s ease;
+}
+
+.stats-table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.stats-table tr:hover {
+  background-color: #e8f0fe;
+  transform: scale(1.01);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 5;
+  position: relative;
+}
+
+.stats-table tr:hover td {
+  color: #1a73e8;
+}
+
+.stats-table td {
+  color: #3c4043;
+  border-bottom: 1px solid #e8eaed;
+  font-size: 14px;
+}
+
+/* Highlight cells with high values */
+.stats-table td[data-high-value="true"] {
+  color: #34a853;
+  font-weight: 600;
+}
+
+/* Column specific styling */
+.stats-table td[data-column="PTS"],
+.stats-table td[data-column="W"],
+.stats-table td[data-column="W_PCT"] {
+  font-weight: 600;
+}
+
+/* Row hover animation */
+@keyframes rowHighlight {
+  from { background-color: transparent; }
+  to { background-color: #e8f0fe; }
+}
+
+
+.stats-table-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #1a73e8, transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  z-index: 20;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+
+@media (max-width: 768px) {
+  .stats-table {
+    font-size: 13px;
+  }
+  
+  .stats-table th,
+  .stats-table td {
+    padding: 10px 12px;
+  }
+  
+  .stats-table th {
+    font-size: 12px;
+  }
+}
+
+
+.stats-table tr.sorted-animation {
+  animation: sortedRow 0.6s ease;
+}
+
+@keyframes sortedRow {
+  0% { background-color: #e8f0fe; }
+  50% { background-color: #d2e3fc; }
+  100% { background-color: inherit; }
+}

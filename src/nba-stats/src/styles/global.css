@@ -1,0 +1,147 @@
+/* Container Styles */
+.league-stats-container,
+.player-stats-container,
+.team-stats-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  text-align: center; 
+}
+
+.league-stats-container:hover,
+.player-stats-container:hover,
+.team-stats-container:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.league-stats-container h2,
+.player-stats-container h2,
+.team-stats-container h2 {
+  color: #1a73e8;
+  margin-bottom: 24px;
+  font-size: 32px;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 8px;
+  text-align: center;
+}
+
+
+.controls,
+.search-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  margin-bottom: 24px;
+  gap: 20px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  flex-wrap: wrap;
+}
+
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center; 
+}
+
+
+.search-button,
+.refresh-button {
+  margin: 0 auto; 
+}
+
+/* Results Section */
+.stats-results {
+  margin: 30px auto 0 auto; 
+  animation: fadeIn 0.5s ease;
+  text-align: center; 
+  width: 100%;
+}
+
+.stats-results h3 {
+  color: #202124;
+  margin-bottom: 16px;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center; 
+}
+
+/* Player and Team Summary */
+.player-summary,
+.team-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  background: linear-gradient(145deg, #f8f9fa, #f1f3f4);
+  padding: 20px;
+  border-radius: 10px;
+  margin: 0 auto 24px auto; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  justify-content: center; 
+}
+
+
+.stats-table-container th {
+  text-align: center;
+}
+
+.stats-table-container td {
+  text-align: center;
+}
+
+
+.sort-hint {
+  text-align: center;
+  display: block;
+  margin: 0 auto 12px auto;
+}
+
+
+.error-message,
+.loading {
+  text-align: center;
+  margin: 0 auto;
+  max-width: 90%;
+}
+
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+
+#root, #__next {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.App {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+
+.App-main {
+  margin: 20px auto;
+  text-align: center;
+}
