@@ -6,7 +6,7 @@
 }
 
 .App-header {
-  background-color: #0B2433; /* NBA blue */
+  background-color: #0B2433; 
   padding: 24px 0;
   color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -151,7 +151,7 @@
   transition: all 0.2s ease;
 }
 
-input, select {
+.input, .select {
   padding: 10px 16px;
   border: 2px solid #dadce0;
   border-radius: 8px;
@@ -160,17 +160,17 @@ input, select {
   transition: all 0.2s ease;
 }
 
-input:focus, select:focus {
+.input:focus, .select:focus {
   outline: none;
   border-color: #1a73e8;
   box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
 }
 
-input:hover, select:hover {
+.input:hover, .select:hover {
   border-color: #aecbfa;
 }
 
-select {
+.select {
   background-color: white;
   cursor: pointer;
   appearance: none;

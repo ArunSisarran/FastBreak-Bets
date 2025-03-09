@@ -126,7 +126,7 @@
   to { background-color: #e8f0fe; }
 }
 
-/* Loading animation for the table */
+
 .stats-table-loading {
   position: absolute;
   top: 0;
@@ -144,7 +144,7 @@
   100% { background-position: 200% 0; }
 }
 
-/* Responsive adjustments */
+
 @media (max-width: 768px) {
   .stats-table {
     font-size: 13px;
@@ -160,7 +160,7 @@
   }
 }
 
-/* Animation for newly sorted data */
+
 .stats-table tr.sorted-animation {
   animation: sortedRow 0.6s ease;
 }

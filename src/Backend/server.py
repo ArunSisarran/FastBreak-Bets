@@ -1,11 +1,14 @@
 import sys
 import os
 from flask import Flask, jsonify, request
-from Flask.BackendFunctions import nba_utils
+from flask_cors import CORS
+import nba_utils
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": ["http://localhost:3000", "http://127.0.0.1:3000"]}},
+     supports_credentials=True)
 
 
 @app.route('/api/teams', methods=['GET'])
@@ -82,5 +85,11 @@ def get_player_stats():
     return jsonify(data)
 
 
+@app.route('/api/ping', methods=['GET'])
+def ping():
+    return jsonify({"status": "ok", "message": "API is working"})
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    print("Starting Flask server on http://localhost:5000")
+    app.run(debug=True, host='0.0.0.0', port=5000)

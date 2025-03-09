@@ -1,9 +1,9 @@
 import React from 'react';
-import './StatsTable.css';
+import styles from '../styles/StatsTable.module.css';
 
 const StatsTable = ({ data, columns, sortConfig, onSort }) => {
   if (!data || data.length === 0) {
-    return <div className="no-data">No data available</div>;
+    return <div className={styles['no-data']}>No data available</div>;
   }
 
   const formatValue = (value, key) => {
@@ -21,19 +21,19 @@ const StatsTable = ({ data, columns, sortConfig, onSort }) => {
   };
 
   return (
-    <div className="stats-table-container">
-      <table className="stats-table">
+    <div className={`stats-table-container ${styles['stats-table-container']}`}>
+      <table className={`stats-table ${styles['stats-table']}`}>
         <thead>
           <tr>
             {columns.map((column) => (
               <th 
                 key={column.key}
-                className={column.sortable ? 'sortable' : ''}
+                className={column.sortable ? `sortable ${styles.sortable}` : ''}
                 onClick={() => column.sortable && onSort && onSort(column.key)}
               >
                 {column.label}
                 {sortConfig && sortConfig.key === column.key && (
-                  <span className="sort-indicator">
+                  <span className={`sort-indicator ${styles['sort-indicator'] || ''}`}>
                     {sortConfig.direction === 'asc' ? ' ▲' : ' ▼'}
                   </span>
                 )}
@@ -45,7 +45,11 @@ const StatsTable = ({ data, columns, sortConfig, onSort }) => {
           {data.map((row, index) => (
             <tr key={index}>
               {columns.map((column) => (
-                <td key={column.key}>
+                <td 
+                  key={column.key}
+                  data-column={column.key}
+                  className={column.key === 'TEAM_NAME' || column.key === 'PLAYER_NAME' ? 'text-left' : ''}
+                >
                   {formatValue(row[column.key], column.key)}
                 </td>
               ))}
