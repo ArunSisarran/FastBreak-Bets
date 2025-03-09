@@ -21,8 +21,7 @@ const TeamStats = () => {
     setError(null);
 
     try {
-      console.log(`Fetching data from: /api/team-stats?team=${encodeURIComponent(teamInput)}&season=${season}`);
-      const response = await fetch(`/api/team-stats?team=${encodeURIComponent(teamInput)}&season=${season}`, {
+      const response = await fetch(`https://fastbreak-bets.onrender.com/api/team-stats?team=${encodeURIComponent(teamInput)}&season=${season}`, {
         headers: {
           'Accept': 'application/json'
         }
