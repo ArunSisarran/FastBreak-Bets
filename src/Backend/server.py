@@ -7,8 +7,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": ["http://localhost:3000", "http://127.0.0.1:3000"]}},
-     supports_credentials=True)
+CORS(app, resources={r"/api/*": {"origins": [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "fast-break-bets.vercel.app"
+]}}, supports_credentials=True)
 
 
 @app.route('/api/teams', methods=['GET'])
