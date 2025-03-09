@@ -38,7 +38,7 @@ FastBreak Bets is a sports betting assistant that uses the NBA API to fetch up-t
 1. Clone the repository:
    ```bash
    git clone https://github.com/ArunSisarran/FastBreakBets.git
-   cd FastBreakBets/src
+   cd FastBreakBets
    ```
 2. Create a virtual environment and install dependencies:
    ```bash
@@ -49,7 +49,8 @@ FastBreak Bets is a sports betting assistant that uses the NBA API to fetch up-t
    ```
 3. Run the Flask backend:
    ```bash
-   python -m Flask.server
+   cd src/Backend/
+   python server.py
    ```
 
 ### Frontend Setup
