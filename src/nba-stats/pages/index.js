@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import styles from './styles/App.module.css'
-import TeamStats from './pages/TeamStats';
-import PlayerStats from './pages/PlayerStats';
-import LeagueStats from './pages/LeagueStats';
+import styles from '../styles/App.module.css';
+import TeamStats from '../pages/TeamStats';
+import PlayerStats from '../pages/PlayerStats';
+import LeagueStats from '../pages/LeagueStats';
 
-function App() {
+export default function Home() {
   const [activeTab, setActiveTab] = useState('team');
 
   return (
@@ -40,5 +40,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
