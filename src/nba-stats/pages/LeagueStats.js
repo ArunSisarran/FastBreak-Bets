@@ -20,7 +20,7 @@ const LeagueStats = () => {
     setError(null);
 
     try {
-      const apiUrl = `https://fastbreak-bets.onrender.com/api/team-stats/league?season=${season}`;
+      const apiUrl = `/api/team-stats/league?season=${season}`;
       console.log(`Fetching data from: ${apiUrl}`);
       
       const response = await fetch(apiUrl, {
