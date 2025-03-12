@@ -29,9 +29,11 @@ const getApiBaseUrl = () => {
  * @returns {string} The complete URL
  */
 export const apiUrl = (endpoint) => {
-  return `${getApiBaseUrl()}${endpoint}`;
+  const baseUrl = getApiBaseUrl();
+  console.log('API Base URL:', baseUrl); // Add this debug log
+  console.log('Full API URL:', `${baseUrl}${endpoint}`); // And this one
+  return `${baseUrl}${endpoint}`;
 };
-
 /**
  * Checks if the local backend server is running
  * @returns {Promise<boolean>} True if the server is running

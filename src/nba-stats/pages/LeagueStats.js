@@ -38,26 +38,26 @@ const LeagueStats = () => {
   setBackendStatus(isRunning ? 'running' : 'not-running');
 };
 
-  const fetchLeagueStats = async () => {
-    console.log('fetchLeagueStats called, backendStatus:', backendStatus);
-    if (backendStatus !== 'running') {
+const fetchLeagueStats = async () => {
+  if (backendStatus !== 'running') {
     console.log('Not fetching - backend not running');
-      setError('Local backend server is not running. Please start the server and try again.');
-      return;
-    }
+    setError('Local backend server is not running. Please start the server and try again.');
+    return;
+  }
 
-    setLoading(true);
-    setError(null);
-    try {
-      const apiUrl = `/api/team-stats/league?season=${season}`;
-      console.log(`Fetching data from: ${apiUrl}`);
-      
-      const response = await fetch(apiUrl, {
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
-      
+  setLoading(true);
+  setError(null);
+  try {
+    // Make sure this uses the full URL from apiUrl
+    const endpoint = `/api/team-stats/league?season=${season}`;
+    const url = apiUrl(endpoint);
+    console.log(`Fetching data from: ${url}`); // This should show localhost URL
+    
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/json'
+      }
+    });      
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Server response error:', errorText);
