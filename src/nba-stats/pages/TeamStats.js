@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../styles/TeamStats.module.css';
 import StatsTable from './StatsTable';
+import { apiUrl, checkLocalBackendStatus } from '../lib/apiConfig';
 
 const TeamStats = () => {
   const [teamInput, setTeamInput] = useState('');
@@ -10,6 +11,25 @@ const TeamStats = () => {
   const [teamStats, setTeamStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [backendStatus, setBackendStatus] = useState('checking'); // 'checking', 'running', 'not-running'
+
+  useEffect(() => {
+    // Check if local backend is running when component mounts
+    checkBackendStatus();
+    
+    // Start polling for backend status every 10 seconds
+    const intervalId = setInterval(checkBackendStatus, 10000);
+    
+    // Clean up interval on unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const checkBackendStatus = async () => {
+    setBackendStatus('checking');
+    const isRunning = await checkLocalBackendStatus();
+    console.log('Backend status check result (TeamStats):', isRunning);
+    setBackendStatus(isRunning ? 'running' : 'not-running');
+  };
 
   const fetchTeamStats = async () => {
     if (!teamInput.trim()) {
@@ -17,11 +37,20 @@ const TeamStats = () => {
       return;
     }
 
+    if (backendStatus !== 'running') {
+      setError('Local backend server is not running. Please start the server and try again.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/team-stats?team=${encodeURIComponent(teamInput)}&season=${season}`, {
+      const endpoint = `/api/team-stats?team=${encodeURIComponent(teamInput)}&season=${season}`;
+      const url = apiUrl(endpoint);
+      console.log(`Fetching team data from: ${url}`);
+      
+      const response = await fetch(url, {
         headers: {
           'Accept': 'application/json'
         }
@@ -72,10 +101,100 @@ const TeamStats = () => {
     ];
   };
 
+  const renderBackendStatus = () => {
+    switch (backendStatus) {
+      case 'running':
+        return (
+          <div className={styles['status-indicator']} style={{
+            backgroundColor: '#e6f4ea',
+            color: '#137333',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: '500'
+          }}>
+            <span style={{
+              display: 'inline-block',
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              backgroundColor: '#137333'
+            }}></span>
+            Local server running
+          </div>
+        );
+      case 'not-running':
+        return (
+          <div className={styles['status-indicator']} style={{
+            backgroundColor: '#fce8e6',
+            color: '#c5221f',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: '500'
+          }}>
+            <span style={{
+              display: 'inline-block',
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              backgroundColor: '#c5221f'
+            }}></span>
+            Local server not running
+            <button 
+              onClick={checkBackendStatus}
+              style={{
+                marginLeft: '10px',
+                backgroundColor: 'white',
+                border: '1px solid #dadce0',
+                borderRadius: '4px',
+                padding: '4px 8px',
+                fontSize: '12px',
+                cursor: 'pointer'
+              }}
+            >
+              Check Again
+            </button>
+          </div>
+        );
+      default:
+        return (
+          <div className={styles['status-indicator']} style={{
+            backgroundColor: '#f8f9fa',
+            color: '#5f6368',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: '500'
+          }}>
+            <span style={{
+              display: 'inline-block',
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              backgroundColor: '#5f6368',
+              animation: 'pulse 1.5s infinite'
+            }}></span>
+            Checking server status...
+          </div>
+        );
+    }
+  };
+
   return (
     <div className={`team-stats-container ${styles['team-stats-container']}`}>
       <h2>Team Statistics</h2>
       
+      {/* Backend Status Indicator */}
+      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        {renderBackendStatus()}
+      </div>
       
       <div style={{ textAlign: 'center' }}>
         
@@ -105,6 +224,7 @@ const TeamStats = () => {
                 backgroundColor: 'white',
                 minWidth: '200px'
               }}
+              disabled={backendStatus !== 'running'}
             />
           </div>
           
@@ -122,6 +242,7 @@ const TeamStats = () => {
               }}
               value={season}
               onChange={(e) => setSeason(e.target.value)}
+              disabled={backendStatus !== 'running'}
             >
               <option value="2024-25">2024-25</option>
               <option value="2023-24">2023-24</option>
@@ -134,7 +255,7 @@ const TeamStats = () => {
           <button 
             className={styles['search-button']}
             onClick={fetchTeamStats}
-            disabled={loading}
+            disabled={loading || backendStatus !== 'running'}
             style={{
               backgroundColor: '#1a73e8',
               color: 'white',
@@ -143,7 +264,8 @@ const TeamStats = () => {
               padding: '10px 20px',
               fontSize: '15px',
               fontWeight: '600',
-              cursor: loading ? 'not-allowed' : 'pointer'
+              cursor: (loading || backendStatus !== 'running') ? 'not-allowed' : 'pointer',
+              opacity: (backendStatus !== 'running') ? 0.6 : 1
             }}
           >
             {loading ? 'Loading...' : 'Get Stats'}

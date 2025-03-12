@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import styles from '../styles/TeamStats.module.css';
+import styles from '../styles/PlayerStats.module.css';
 import StatsTable from './StatsTable';
 import { apiUrl, checkLocalBackendStatus } from '../lib/apiConfig';
 
-const TeamStats = () => {
-  const [teamInput, setTeamInput] = useState('');
+const PlayerStats = () => {
+  const [playerInput, setPlayerInput] = useState('');
   const [season, setSeason] = useState('2024-25');
-  const [teamStats, setTeamStats] = useState(null);
+  const [playerStats, setPlayerStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [backendStatus, setBackendStatus] = useState('checking'); // 'checking', 'running', 'not-running'
@@ -27,13 +27,13 @@ const TeamStats = () => {
   const checkBackendStatus = async () => {
     setBackendStatus('checking');
     const isRunning = await checkLocalBackendStatus();
-    console.log('Backend status check result (TeamStats):', isRunning);
+    console.log('Backend status check result (PlayerStats):', isRunning);
     setBackendStatus(isRunning ? 'running' : 'not-running');
   };
 
-  const fetchTeamStats = async () => {
-    if (!teamInput.trim()) {
-      setError('Please enter a team name or abbreviation');
+  const fetchPlayerStats = async () => {
+    if (!playerInput.trim()) {
+      setError('Please enter a player name');
       return;
     }
 
@@ -46,9 +46,9 @@ const TeamStats = () => {
     setError(null);
 
     try {
-      const endpoint = `/api/team-stats?team=${encodeURIComponent(teamInput)}&season=${season}`;
+      const endpoint = `/api/player-stats?player=${encodeURIComponent(playerInput)}&season=${season}`;
       const url = apiUrl(endpoint);
-      console.log(`Fetching team data from: ${url}`);
+      console.log(`Fetching player data from: ${url}`);
       
       const response = await fetch(url, {
         headers: {
@@ -60,36 +60,35 @@ const TeamStats = () => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Server response error:', errorText);
-        throw new Error(`Failed to fetch team stats: ${response.status}`);
+        throw new Error(`Failed to fetch player stats: ${response.status}`);
       }
       
-      
+    
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         console.warn('Response is not JSON, content type:', contentType);
       }
       
-      
+    
       const data = await response.json();
       
-      setTeamStats(data);
+      setPlayerStats(data);
     } catch (err) {
-      console.error('Error fetching team stats:', err);
+      console.error('Error fetching player stats:', err);
       setError(err.message);
-      setTeamStats(null);
+      setPlayerStats(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const getTeamColumns = () => {
+  const getPlayerColumns = () => {
     return [
-      { key: 'TEAM_NAME', label: 'Team' },
+      { key: 'PLAYER_NAME', label: 'Player' },
+      { key: 'TEAM_ABBREVIATION', label: 'Team' },
       { key: 'GP', label: 'Games' },
-      { key: 'W', label: 'Wins' },
-      { key: 'L', label: 'Losses' },
-      { key: 'W_PCT', label: 'Win %' },
-      { key: 'PTS', label: 'PPG' },
+      { key: 'MIN', label: 'Minutes' },
+      { key: 'PTS', label: 'Points' },
       { key: 'FG_PCT', label: 'FG%' },
       { key: 'FG3_PCT', label: '3P%' },
       { key: 'FT_PCT', label: 'FT%' },
@@ -98,6 +97,7 @@ const TeamStats = () => {
       { key: 'STL', label: 'Steals' },
       { key: 'BLK', label: 'Blocks' },
       { key: 'TOV', label: 'Turnovers' },
+      { key: 'PLUS_MINUS', label: '+/-' },
     ];
   };
 
@@ -188,16 +188,16 @@ const TeamStats = () => {
   };
 
   return (
-    <div className={`team-stats-container ${styles['team-stats-container']}`}>
-      <h2>Team Statistics</h2>
+    <div className={`player-stats-container ${styles['player-stats-container']}`}>
+      <h2>Player Statistics</h2>
       
       {/* Backend Status Indicator */}
       <div style={{ textAlign: 'center', marginBottom: '20px' }}>
         {renderBackendStatus()}
       </div>
-      
+    
       <div style={{ textAlign: 'center' }}>
-        
+      
         <div 
           style={{ 
             display: 'inline-flex', 
@@ -209,13 +209,13 @@ const TeamStats = () => {
           }}
         >
           <div className={styles['input-group']} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <label htmlFor="team-input">Team Name:</label>
+            <label htmlFor="player-input">Player Name:</label>
             <input
-              id="team-input"
+              id="player-input"
               type="text"
-              value={teamInput}
-              onChange={(e) => setTeamInput(e.target.value)}
-              placeholder="e.g. Lakers or LAL"
+              value={playerInput}
+              onChange={(e) => setPlayerInput(e.target.value)}
+              placeholder="e.g. LeBron James"
               style={{
                 padding: '10px 16px',
                 border: '2px solid #dadce0',
@@ -254,7 +254,7 @@ const TeamStats = () => {
           
           <button 
             className={styles['search-button']}
-            onClick={fetchTeamStats}
+            onClick={fetchPlayerStats}
             disabled={loading || backendStatus !== 'running'}
             style={{
               backgroundColor: '#1a73e8',
@@ -275,29 +275,33 @@ const TeamStats = () => {
 
       {error && <div className={`error-message ${styles['error-message']}`}>{error}</div>}
 
-      {teamStats && (
+      {playerStats && (
         <div className={`stats-results ${styles['stats-results']}`}>
-          <h3>{teamStats.TEAM_NAME} ({season})</h3>
-          <div className={`team-summary ${styles['team-summary']}`}>
+          <h3>{playerStats.PLAYER_NAME} ({season})</h3>
+          <div className={`player-summary ${styles['player-summary']}`}>
             <div className={`summary-item ${styles['summary-item']}`}>
-              <span className={`label ${styles.label}`}>Record:</span>
-              <span className={`value ${styles.value}`}>{teamStats.W}-{teamStats.L}</span>
-            </div>
-            <div className={`summary-item ${styles['summary-item']}`}>
-              <span className={`label ${styles.label}`}>Win %:</span>
-              <span className={`value ${styles.value}`}>{(teamStats.W_PCT * 100).toFixed(1)}%</span>
+              <span className={`label ${styles.label}`}>Team:</span>
+              <span className={`value ${styles.value}`}>{playerStats.TEAM_ABBREVIATION}</span>
             </div>
             <div className={`summary-item ${styles['summary-item']}`}>
               <span className={`label ${styles.label}`}>PPG:</span>
-              <span className={`value ${styles.value}`}>{teamStats.PTS.toFixed(1)}</span>
+              <span className={`value ${styles.value}`}>{playerStats.PTS.toFixed(1)}</span>
+            </div>
+            <div className={`summary-item ${styles['summary-item']}`}>
+              <span className={`label ${styles.label}`}>RPG:</span>
+              <span className={`value ${styles.value}`}>{playerStats.REB.toFixed(1)}</span>
+            </div>
+            <div className={`summary-item ${styles['summary-item']}`}>
+              <span className={`label ${styles.label}`}>APG:</span>
+              <span className={`value ${styles.value}`}>{playerStats.AST.toFixed(1)}</span>
             </div>
           </div>
           
-          <StatsTable data={[teamStats]} columns={getTeamColumns()} />
+          <StatsTable data={[playerStats]} columns={getPlayerColumns()} />
         </div>
       )}
     </div>
   );
 };
 
-export default TeamStats;
+export default PlayerStats;
