@@ -5,12 +5,12 @@ from flask_cors import CORS
 import nba_utils
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-
+# Initialize Flask and set up CORS to allow connections from anywhere
 app = Flask(__name__)
-
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 
+# Make sure CORS headers are present on all responses
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -19,12 +19,13 @@ def after_request(response):
     return response
 
 
+# Get all NBA teams
 @app.route('/api/teams', methods=['GET'])
 def get_all_teams():
-    """Get list of all NBA teams"""
     return jsonify(nba_utils.get_all_teams_data())
 
 
+# Search for players by name
 @app.route('/api/players', methods=['GET'])
 def search_players():
     search_term = request.args.get('name', '')
@@ -35,9 +36,9 @@ def search_players():
     return jsonify(found_players)
 
 
+# Get stats for a specific team
 @app.route('/api/team-stats', methods=['GET'])
 def get_team_stats():
-    """Get team stats by team name/abbreviation"""
     team_name = request.args.get('team', '')
     season = request.args.get('season', '2024-25')
 
@@ -58,9 +59,9 @@ def get_team_stats():
     return jsonify(data)
 
 
+# Get stats for all teams in the league
 @app.route('/api/team-stats/league', methods=['GET'])
 def get_league_team_stats():
-    """Get stats for all teams"""
     season = request.args.get('season', '2024-25')
 
     data = nba_utils.get_league_team_stats_data(season)
@@ -70,9 +71,9 @@ def get_league_team_stats():
     return jsonify(data)
 
 
+# Get stats for a specific player
 @app.route('/api/player-stats', methods=['GET'])
 def get_player_stats():
-    """Get player stats by player name"""
     player_name = request.args.get('player', '')
     season = request.args.get('season', '2024-25')
 
@@ -93,11 +94,13 @@ def get_player_stats():
     return jsonify(data)
 
 
+# Simple endpoint to check if API is working
 @app.route('/api/ping', methods=['GET'])
 def ping():
     return jsonify({"status": "ok", "message": "API is working"})
 
 
+# Start the server when this file is run directly
 if __name__ == '__main__':
     print("Starting Flask server on http://localhost:5000")
     app.run(debug=False, host='0.0.0.0', port=5000)
