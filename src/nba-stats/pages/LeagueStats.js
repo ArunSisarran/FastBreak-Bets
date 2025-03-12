@@ -25,20 +25,23 @@ const LeagueStats = () => {
   }, []);
 
   useEffect(() => {
-    // Fetch league stats when season changes or when backend comes online
-    if (backendStatus === 'running') {
-      fetchLeagueStats();
-    }
-  }, [season, backendStatus]);
+  // Fetch league stats when season changes or when backend comes online
+  if (backendStatus === 'running') {
+    fetchLeagueStats();
+  }
+}, [season, backendStatus]);
 
   const checkBackendStatus = async () => {
-    setBackendStatus('checking');
-    const isRunning = await checkLocalBackendStatus();
-    setBackendStatus(isRunning ? 'running' : 'not-running');
-  };
+  setBackendStatus('checking');
+  const isRunning = await checkLocalBackendStatus();
+  console.log('Backend status check result:', isRunning);
+  setBackendStatus(isRunning ? 'running' : 'not-running');
+};
 
   const fetchLeagueStats = async () => {
+    console.log('fetchLeagueStats called, backendStatus:', backendStatus);
     if (backendStatus !== 'running') {
+    console.log('Not fetching - backend not running');
       setError('Local backend server is not running. Please start the server and try again.');
       return;
     }
