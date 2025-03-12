@@ -10,15 +10,40 @@ const LeagueStats = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: 'W_PCT', direction: 'desc' });
+  const [backendStatus, setBackendStatus] = useState('checking'); // 'checking', 'running', 'not-running'
 
   useEffect(() => {
-    fetchLeagueStats();
-  }, [season]);
+    // Check if local backend is running when component mounts
+    checkBackendStatus();
+    
+    // Start polling for backend status every 10 seconds
+    const intervalId = setInterval(checkBackendStatus, 10000);
+    
+    // Clean up interval on unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    // Fetch league stats when season changes or when backend comes online
+    if (backendStatus === 'running') {
+      fetchLeagueStats();
+    }
+  }, [season, backendStatus]);
+
+  const checkBackendStatus = async () => {
+    setBackendStatus('checking');
+    const isRunning = await checkLocalBackendStatus();
+    setBackendStatus(isRunning ? 'running' : 'not-running');
+  };
 
   const fetchLeagueStats = async () => {
+    if (backendStatus !== 'running') {
+      setError('Local backend server is not running. Please start the server and try again.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
-
     try {
       const apiUrl = `/api/team-stats/league?season=${season}`;
       console.log(`Fetching data from: ${apiUrl}`);
@@ -99,6 +124,91 @@ const LeagueStats = () => {
       { key: 'BLK', label: 'BPG', sortable: true },
       { key: 'TOV', label: 'TOPG', sortable: true },
     ];
+  };
+  const renderBackendStatus = () => {
+    switch (backendStatus) {
+      case 'running':
+        return (
+          <div className={styles['status-indicator']} style={{
+            backgroundColor: '#e6f4ea',
+            color: '#137333',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: '500'
+          }}>
+            <span style={{
+              display: 'inline-block',
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              backgroundColor: '#137333'
+            }}></span>
+            Local server running
+          </div>
+        );
+      case 'not-running':
+        return (
+          <div className={styles['status-indicator']} style={{
+            backgroundColor: '#fce8e6',
+            color: '#c5221f',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: '500'
+          }}>
+            <span style={{
+              display: 'inline-block',
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              backgroundColor: '#c5221f'
+            }}></span>
+            Local server not running
+            <button 
+              onClick={checkBackendStatus}
+              style={{
+                marginLeft: '10px',
+                backgroundColor: 'white',
+                border: '1px solid #dadce0',
+                borderRadius: '4px',
+                padding: '4px 8px',
+                fontSize: '12px',
+                cursor: 'pointer'
+              }}
+            >
+              Check Again
+            </button>
+          </div>
+        );
+      default:
+        return (
+          <div className={styles['status-indicator']} style={{
+            backgroundColor: '#f8f9fa',
+            color: '#5f6368',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: '500'
+          }}>
+            <span style={{
+              display: 'inline-block',
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              backgroundColor: '#5f6368',
+              animation: 'pulse 1.5s infinite'
+            }}></span>
+            Checking server status...
+          </div>
+        );
+    }
   };
 
   return (
