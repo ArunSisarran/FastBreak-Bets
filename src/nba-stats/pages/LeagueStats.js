@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../styles/LeagueStats.module.css';
 import StatsTable from './StatsTable';
+import { apiUrl, checkLocalBackendStatus } from '../lib/apiConfig'; // Added import
 
 const LeagueStats = () => {
   const [season, setSeason] = useState('2024-25');

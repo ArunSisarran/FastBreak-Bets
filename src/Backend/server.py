@@ -10,7 +10,10 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "fast-break-bets.vercel.app"
+    "https://fast-break-bets.vercel.app",   # Added https:// prefix
+    "http://fast-break-bets.vercel.app",     # Both protocols for safety
+    "https://www.fast-break-bets.vercel.app",
+    "http://www.fast-break-bets.vercel.app"
 ]}}, supports_credentials=True)
 
 
