@@ -5,7 +5,6 @@ export default function Document() {
     <Html lang="en">
       <Head>
         <meta charSet="utf-8" />
-        {/* No title tag here */}
       </Head>
       <body>
         <Main />

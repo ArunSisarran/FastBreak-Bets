@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../styles/TeamStats.module.css';
 import StatsTable from './StatsTable';
+import { apiUrl, checkLocalBackendStatus } from '../lib/apiConfig';
 
 const TeamStats = () => {
   const [teamInput, setTeamInput] = useState('');
@@ -10,6 +11,25 @@ const TeamStats = () => {
   const [teamStats, setTeamStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [backendStatus, setBackendStatus] = useState('checking'); // 'checking', 'running', 'not-running'
+
+  useEffect(() => {
+    // Check if local backend is running when component mounts
+    checkBackendStatus();
+    
+    // Start polling for backend status every 10 seconds
+    const intervalId = setInterval(checkBackendStatus, 10000);
+    
+    // Clean up interval on unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const checkBackendStatus = async () => {
+    setBackendStatus('checking');
+    const isRunning = await checkLocalBackendStatus();
+    console.log('Backend status check result (TeamStats):', isRunning);
+    setBackendStatus(isRunning ? 'running' : 'not-running');
+  };
 
   const fetchTeamStats = async () => {
     if (!teamInput.trim()) {
@@ -17,11 +37,20 @@ const TeamStats = () => {
       return;
     }
 
+    if (backendStatus !== 'running') {
+      setError('Local backend server is not running. Please start the server and try again.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/team-stats?team=${encodeURIComponent(teamInput)}&season=${season}`, {
+      const endpoint = `/api/team-stats?team=${encodeURIComponent(teamInput)}&season=${season}`;
+      const url = apiUrl(endpoint);
+      console.log(`Fetching team data from: ${url}`);
+      
+      const response = await fetch(url, {
         headers: {
           'Accept': 'application/json'
         }
@@ -72,24 +101,49 @@ const TeamStats = () => {
     ];
   };
 
+  const renderBackendStatus = () => {
+    switch (backendStatus) {
+      case 'running':
+        return (
+          <div className={`${styles['status-indicator']} ${styles['status-running']}`}>
+            <span className={`${styles['status-dot']} ${styles['status-dot-running']}`}></span>
+            Local server running
+          </div>
+        );
+      case 'not-running':
+        return (
+          <div className={`${styles['status-indicator']} ${styles['status-not-running']}`}>
+            <span className={`${styles['status-dot']} ${styles['status-dot-not-running']}`}></span>
+            Local server not running
+            <button 
+              onClick={checkBackendStatus}
+              className={styles['check-again-button']}
+            >
+              Check Again
+            </button>
+          </div>
+        );
+      default:
+        return (
+          <div className={`${styles['status-indicator']} ${styles['status-checking']}`}>
+            <span className={`${styles['status-dot']} ${styles['status-dot-checking']}`}></span>
+            Checking server status...
+          </div>
+        );
+    }
+  };
+
   return (
     <div className={`team-stats-container ${styles['team-stats-container']}`}>
       <h2>Team Statistics</h2>
       
+      <div className={styles['center-container']}>
+        {renderBackendStatus()}
+      </div>
       
-      <div style={{ textAlign: 'center' }}>
-        
-        <div 
-          style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            background: '#f8f9fa',
-            padding: '16px 24px',
-            borderRadius: '8px',
-            gap: '24px'
-          }}
-        >
-          <div className={styles['input-group']} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div className={styles['center-container']}>
+        <div className={styles['controls-container']}>
+          <div className={styles['input-group']}>
             <label htmlFor="team-input">Team Name:</label>
             <input
               id="team-input"
@@ -97,31 +151,19 @@ const TeamStats = () => {
               value={teamInput}
               onChange={(e) => setTeamInput(e.target.value)}
               placeholder="e.g. Lakers or LAL"
-              style={{
-                padding: '10px 16px',
-                border: '2px solid #dadce0',
-                borderRadius: '8px',
-                fontSize: '15px',
-                backgroundColor: 'white',
-                minWidth: '200px'
-              }}
+              className={styles['team-input']}
+              disabled={backendStatus !== 'running'}
             />
           </div>
           
-          <div className={styles['input-group']} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className={styles['input-group']}>
             <label htmlFor="season-input">Season:</label>
             <select
               id="season-input"
-              style={{
-                padding: '10px 36px 10px 16px', 
-                border: '2px solid #dadce0',
-                borderRadius: '8px',
-                fontSize: '15px',
-                backgroundColor: 'white',
-                minWidth: '120px'  
-              }}
+              className={styles['season-select']}
               value={season}
               onChange={(e) => setSeason(e.target.value)}
+              disabled={backendStatus !== 'running'}
             >
               <option value="2024-25">2024-25</option>
               <option value="2023-24">2023-24</option>
@@ -134,17 +176,7 @@ const TeamStats = () => {
           <button 
             className={styles['search-button']}
             onClick={fetchTeamStats}
-            disabled={loading}
-            style={{
-              backgroundColor: '#1a73e8',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '10px 20px',
-              fontSize: '15px',
-              fontWeight: '600',
-              cursor: loading ? 'not-allowed' : 'pointer'
-            }}
+            disabled={loading || backendStatus !== 'running'}
           >
             {loading ? 'Loading...' : 'Get Stats'}
           </button>

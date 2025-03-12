@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../styles/LeagueStats.module.css';
 import StatsTable from './StatsTable';
+import { apiUrl, checkLocalBackendStatus } from '../lib/apiConfig';
 
 const LeagueStats = () => {
   const [season, setSeason] = useState('2024-25');
@@ -10,25 +11,51 @@ const LeagueStats = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: 'W_PCT', direction: 'desc' });
+  const [backendStatus, setBackendStatus] = useState('checking');
 
   useEffect(() => {
-    fetchLeagueStats();
-  }, [season]);
+    // Initial backend check
+    checkBackendStatus();
+    
+    // Keep checking if the backend is running
+    const intervalId = setInterval(checkBackendStatus, 10000);
+    
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    // Get fresh data when season changes or backend comes online
+    if (backendStatus === 'running') {
+      fetchLeagueStats();
+    }
+  }, [season, backendStatus]);
+
+  const checkBackendStatus = async () => {
+    setBackendStatus('checking');
+    const isRunning = await checkLocalBackendStatus();
+    console.log('Backend status check result (LeagueStats):', isRunning);
+    setBackendStatus(isRunning ? 'running' : 'not-running');
+  };
 
   const fetchLeagueStats = async () => {
+    if (backendStatus !== 'running') {
+      console.log('Not fetching - backend not running');
+      setError('Local backend server is not running. Please start the server and try again.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
-
     try {
-      const apiUrl = `/api/team-stats/league?season=${season}`;
-      console.log(`Fetching data from: ${apiUrl}`);
+      const endpoint = `/api/team-stats/league?season=${season}`;
+      const url = apiUrl(endpoint);
+      console.log(`Fetching league data from: ${url}`);
       
-      const response = await fetch(apiUrl, {
+      const response = await fetch(url, {
         headers: {
           'Accept': 'application/json'
         }
-      });
-      
+      });      
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Server response error:', errorText);
@@ -101,35 +128,56 @@ const LeagueStats = () => {
     ];
   };
 
+  const renderBackendStatus = () => {
+    switch (backendStatus) {
+      case 'running':
+        return (
+          <div className={`${styles['status-indicator']} ${styles['status-running']}`}>
+            <span className={`${styles['status-dot']} ${styles['status-dot-running']}`}></span>
+            Local server running
+          </div>
+        );
+      case 'not-running':
+        return (
+          <div className={`${styles['status-indicator']} ${styles['status-not-running']}`}>
+            <span className={`${styles['status-dot']} ${styles['status-dot-not-running']}`}></span>
+            Local server not running
+            <button 
+              onClick={checkBackendStatus}
+              className={styles['check-again-button']}
+            >
+              Check Again
+            </button>
+          </div>
+        );
+      default:
+        return (
+          <div className={`${styles['status-indicator']} ${styles['status-checking']}`}>
+            <span className={`${styles['status-dot']} ${styles['status-dot-checking']}`}></span>
+            Checking server status...
+          </div>
+        );
+    }
+  };
+
   return (
     <div className={`league-stats-container ${styles['league-stats-container']}`}>
       <h2>League Overview</h2>
       
-      <div style={{ textAlign: 'center' }}>
-        <div 
-          style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            background: '#f8f9fa',
-            padding: '16px 24px',
-            borderRadius: '8px',
-            gap: '24px'
-          }}
-        >
-          <div className={styles['input-group']} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div className={styles['center-container']}>
+        {renderBackendStatus()}
+      </div>
+      
+      <div className={styles['center-container']}>
+        <div className={styles['controls-container']}>
+          <div className={styles['input-group']}>
             <label htmlFor="season-input">Season:</label>
             <select
               id="season-input"
-              style={{
-                padding: '10px 36px 10px 16px', 
-                border: '2px solid #dadce0',
-                borderRadius: '8px',
-                fontSize: '15px',
-                backgroundColor: 'white',
-                minWidth: '120px'  
-              }}
+              className={styles['season-select']}
               value={season}
               onChange={(e) => setSeason(e.target.value)}
+              disabled={backendStatus !== 'running'}
             >
               <option value="2024-25">2024-25</option>
               <option value="2023-24">2023-24</option>
@@ -142,17 +190,7 @@ const LeagueStats = () => {
           <button 
             className={styles['refresh-button']}
             onClick={fetchLeagueStats}
-            disabled={loading}
-            style={{
-              backgroundColor: '#1a73e8',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '10px 20px',
-              fontSize: '15px',
-              fontWeight: '600',
-              cursor: loading ? 'not-allowed' : 'pointer'
-            }}
+            disabled={loading || backendStatus !== 'running'}
           >
             {loading ? 'Loading...' : 'Refresh'}
           </button>
