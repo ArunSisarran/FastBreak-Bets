@@ -7,14 +7,16 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "https://fast-break-bets.vercel.app",   # Added https:// prefix
-    "http://fast-break-bets.vercel.app",     # Both protocols for safety
-    "https://www.fast-break-bets.vercel.app",
-    "http://www.fast-break-bets.vercel.app"
-]}}, supports_credentials=True)
+
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
 
 @app.route('/api/teams', methods=['GET'])
@@ -98,4 +100,4 @@ def ping():
 
 if __name__ == '__main__':
     print("Starting Flask server on http://localhost:5000")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)

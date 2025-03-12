@@ -38,26 +38,19 @@ export const apiUrl = (endpoint) => {
  */
 export const checkLocalBackendStatus = async () => {
   try {
-    // Simple, direct fetch without extra options
-    const response = await fetch('http://localhost:5000/api/ping');
+    // Simple fetch with no fancy options
+    const response = await fetch('http://localhost:5000/api/ping', {
+      mode: 'cors',  // Explicitly set CORS mode
+      cache: 'no-cache'  // Avoid caching issues
+    });
     
-    // Log the raw response
-    console.log('Ping response:', response);
-    
-    // Try to get the response text for debugging
-    const text = await response.text();
-    console.log('Ping response text:', text);
-    
-    // Parse it back to JSON if possible
-    try {
-      const data = JSON.parse(text);
-      console.log('Parsed ping data:', data);
-    } catch (parseErr) {
-      console.log('Could not parse response as JSON');
+    if (response.ok) {
+      console.log('Backend ping successful');
+      return true;
+    } else {
+      console.log('Backend ping failed with status:', response.status);
+      return false;
     }
-    
-    // If we got here without errors and status is in 200-299 range
-    return response.ok;
   } catch (err) {
     console.warn('Local backend check failed:', err.message);
     return false;
