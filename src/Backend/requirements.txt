@@ -2,4 +2,3 @@ flask
 flask_cors
 nba_api
 pandas
-gunicorn
