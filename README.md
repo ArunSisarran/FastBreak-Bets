@@ -36,7 +36,6 @@ FastBreak Bets is a sports betting assistant that uses the NBA API to fetch up-t
 ### Prerequisites
 
 - Python 3.x
-- Node.js (npm)
 - Virtual Environment (optional but recommended)
 
 ### Backend Setup
