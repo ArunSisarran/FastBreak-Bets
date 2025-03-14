@@ -2,12 +2,16 @@
 
 FastBreak Bets is a sports betting assistant that uses the NBA API to fetch up-to-date information about user-specified teams and players to generate more accurate betting parlays. The project combines a Flask backend with a React frontend and integrates a machine learning model to suggest betting parlays based on previous game data.
 
+### Note:
+- This application requires you to host the backend on your local machine. Due to the slow nature of third party free backend hosting websites, local hosting will make the app feel much more responsive.
+- Access the frontend at `fast-break-bets.vercel.app`
+
 ## Features
 
 - Fetch real-time NBA data using the `nba_api`
 - Search for players and teams through the frontend interface
 - View current league standings
-- Machine learning model to generate:
+- (In progress) Machine learning model to generate:
   - Likely parlay (safe bet)
   - Risky parlay (high potential reward)
 
@@ -57,17 +61,16 @@ FastBreak Bets is a sports betting assistant that uses the NBA API to fetch up-t
 
 ## Usage
 
-1. Access the frontend at `http://localhost:5000`
+1. Access the frontend at `fast-break-bets.vercel.app`
 2. Search for players or teams using the search bar
 3. View league standings
-4. Generate likely or risky parlays based on past game data
+4. Generate likely or risky parlays based on past game data (upcoming)
 
 ## Machine Learning
 
 The machine learning model uses historical game data to predict possible parlays. The model is trained using Scikit-learn and includes:
 
 - Feature selection for player performance metrics
-- Random Forest Classifier
 - Logistic Regression
 
 ## Contributing
