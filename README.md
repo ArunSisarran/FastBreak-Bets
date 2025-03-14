@@ -50,7 +50,7 @@ FastBreak Bets is a sports betting assistant that uses the NBA API to fetch up-t
    python -m venv venv
    source venv/bin/activate  # For Linux/MacOS
    venv\Scripts\activate    # For Windows
-   pip install -r requirements.txt
+   pip install -r src/Backend/requirements.txt
    ```
 3. Run the Flask backend:
    ```bash
