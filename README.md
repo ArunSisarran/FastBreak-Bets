@@ -22,6 +22,8 @@ FastBreak Bets is a sports betting assistant that uses the NBA API to fetch up-t
 ### Frontend
 
 - React
+- Next.js
+- Vercel
 - npm
 - CSS
 
@@ -51,21 +53,6 @@ FastBreak Bets is a sports betting assistant that uses the NBA API to fetch up-t
    ```bash
    cd src/Backend/
    python server.py
-   ```
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd ../nba-stats
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the frontend:
-   ```bash
-   npm run dev
    ```
 
 ## Usage

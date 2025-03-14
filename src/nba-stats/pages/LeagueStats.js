@@ -14,7 +14,7 @@ const LeagueStats = () => {
   const [backendStatus, setBackendStatus] = useState('checking');
 
   useEffect(() => {
-    // Initial backend check
+    // Check if backend is runnint
     checkBackendStatus();
     
     // Keep checking if the backend is running
@@ -24,7 +24,7 @@ const LeagueStats = () => {
   }, []);
 
   useEffect(() => {
-    // Get fresh data when season changes or backend comes online
+    // Get new data when season changes or backend comes online
     if (backendStatus === 'running') {
       fetchLeagueStats();
     }
