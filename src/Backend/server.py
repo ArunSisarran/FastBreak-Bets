@@ -5,12 +5,12 @@ from flask_cors import CORS
 import nba_utils
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Initialize Flask and set up CORS to allow connections from anywhere
+# Initialize Flask and set up CORS
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 
-# Make sure CORS headers are present on all responses
+# CORS headers
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -30,7 +30,7 @@ def get_all_teams():
 def search_players():
     search_term = request.args.get('name', '')
     if not search_term:
-        return jsonify({"error": "Please provide a name parameter"}), 400
+        return jsonify({"error": "Please provide a name"}), 400
 
     found_players = nba_utils.search_players_data(search_term)
     return jsonify(found_players)
@@ -78,15 +78,15 @@ def get_player_stats():
     season = request.args.get('season', '2024-25')
 
     if not player_name:
-        return jsonify({"error": "Please provide a player parameter"}), 400
+        return jsonify({"error": "Please provide a player name"}), 400
 
     player_id = nba_utils.get_player_id(player_name)
     if not player_id:
-        return jsonify({"error": f"Player '{player_name}' not found"}), 404
+        return jsonify({"error": f"Player '{player_name}' not found in database"}), 404
 
     data = nba_utils.get_player_stats_data(player_id, season)
     if not data:
-        return jsonify({"error": "No stats available for this player"}), 404
+        return jsonify({"error": f"No stats available for '{player_name}' currently"}), 404
 
     if "error" in data:
         return jsonify({"error": data["error"]}), 500
@@ -94,7 +94,8 @@ def get_player_stats():
     return jsonify(data)
 
 
-# Simple endpoint to check if API is working
+# Ping the backend server to make sure its working
+# Debugging purposes
 @app.route('/api/ping', methods=['GET'])
 def ping():
     return jsonify({"status": "ok", "message": "API is working"})

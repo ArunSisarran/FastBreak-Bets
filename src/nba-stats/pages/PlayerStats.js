@@ -14,10 +14,10 @@ const PlayerStats = () => {
   const [backendStatus, setBackendStatus] = useState('checking'); // 'checking', 'running', 'not-running'
 
   useEffect(() => {
-    // Check if local backend is running when component mounts
+    // Check if backend is running 
     checkBackendStatus();
     
-    // Start polling for backend status every 10 seconds
+    // Start checking for backend status every 10 seconds
     const intervalId = setInterval(checkBackendStatus, 10000);
     
     return () => clearInterval(intervalId);
